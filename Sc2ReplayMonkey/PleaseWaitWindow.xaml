@@ -1,0 +1,20 @@
+﻿<Window x:Class="Sc2ReplayMonkey.PleaseWaitWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:local="clr-namespace:Sc2ReplayMonkey"
+        WindowStartupLocation="CenterOwner"
+        Title="PleaseWaitWindow" Height="174" Width="300" Activated="Window_Activated">
+    <Grid Style="{StaticResource WindowBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Style="{StaticResource WindowTextelement}" FontSize="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            Please wait while the replays            
+        </TextBlock>
+        <TextBlock Style="{StaticResource WindowTextelement}" FontSize="20" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            are parsed and serialized
+        </TextBlock>
+    </Grid>
+</Window>
