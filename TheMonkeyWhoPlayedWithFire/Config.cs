@@ -32,6 +32,8 @@ namespace Sc2ReplayMonkey
     {
         public Config()
         {
+            AutoRelocate = false;
+            FullDelete = false;
             IoC.AddMonkey<IConfig>(this);
             DeserializeConfig();
         }
@@ -46,6 +48,7 @@ namespace Sc2ReplayMonkey
                 XmlNode rootNode = doc.SelectSingleNode("Root");
                 RelocatePath = rootNode.SelectSingleNode("RelocatePath").InnerXml;
                 AutoRelocate = Convert.ToBoolean(rootNode.SelectSingleNode("AutoRelocate").InnerXml);
+                FullDelete = Convert.ToBoolean(rootNode.SelectSingleNode("FullDelete").InnerXml);
             }
         }
 
@@ -66,6 +69,8 @@ namespace Sc2ReplayMonkey
             XmlElement rootElement = FileHandlingBaboon.SerializeElement(doc, "Root", "");
             XmlElement relocatePathNode = FileHandlingBaboon.SerializeElement(doc, "RelocatePath", RelocatePath);
             XmlElement autoRelocateNode = FileHandlingBaboon.SerializeElement(doc, "AutoRelocate", AutoRelocate.ToString());
+            XmlElement fullDeleteNode = FileHandlingBaboon.SerializeElement(doc, "FullDelete", FullDelete.ToString());
+            rootElement.AppendChild(fullDeleteNode);
             rootElement.AppendChild(relocatePathNode);
             rootElement.AppendChild(autoRelocateNode);
 
@@ -77,5 +82,6 @@ namespace Sc2ReplayMonkey
         String m_XmlPath = Directory.GetCurrentDirectory() + @"\Config.xml";
         public String RelocatePath { get; set; }
         public Boolean AutoRelocate { get; set; }
+        public Boolean FullDelete { get; set; }
     }
 }

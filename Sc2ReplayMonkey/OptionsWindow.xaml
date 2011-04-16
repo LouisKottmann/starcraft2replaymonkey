@@ -10,6 +10,7 @@
                 <Button Style="{StaticResource GlassButton}" Click="buttonRelocatePath_Click" Name="buttonRelocatePath" Content="..." Margin="5,0,5,0"/>
                 <CheckBox Name="checkBoxAutoRelocate" Style="{StaticResource checkboxStyle}" Checked="checkBoxAutoRelocate_Checked" Unchecked="checkBoxAutoRelocate_Unchecked" Content="Auto" VerticalAlignment="Center" Margin="5,0,5,0"/>
             </StackPanel>
+            <CheckBox Name="checkBoxFullDelete" Style="{StaticResource checkboxStyle}" FlowDirection="RightToLeft" Checked="checkBoxFullDelete_Checked" Unchecked="checkBoxFullDelete_Unchecked" Content="Make the DELETE button delete the replay too" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,5,0" />
             <Button Style="{StaticResource GlassButton}" Name="buttonCloseOptionsWindow" Click="buttonCloseOptionsWindow_Click" Content="Close" HorizontalAlignment="Right" Margin="5"/>
         </StackPanel>
     </GroupBox>

@@ -14,5 +14,7 @@ namespace Sc2ReplayMonkey
         String RelocatePath { get; set; }
 
         Boolean AutoRelocate { get; set; }
+
+        Boolean FullDelete { get; set; }
     }
 }

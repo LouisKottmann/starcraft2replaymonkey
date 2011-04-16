@@ -134,10 +134,18 @@ namespace Sc2ReplayMonkey
         {
             if (!String.IsNullOrEmpty(m_CurrentData.ReplayPath))
             {
-                File.Delete(m_IFileHandlingBaboon.AvailableReplays[m_CurrentData.ReplayPath]);
-                m_IFileHandlingBaboon.RemoveReplayFromAvailables(m_CurrentData.ReplayPath);
-            }
+                String replayPath = m_CurrentData.ReplayPath;
 
+                //Deleting the replay's XML.
+                File.Delete(m_IFileHandlingBaboon.AvailableReplays[replayPath]);
+                m_IFileHandlingBaboon.RemoveReplayFromAvailables(replayPath);
+
+                //Deleting the replay too if the user asked in the config.
+                if (m_Config.FullDelete)
+                {                    
+                    File.Delete(replayPath);
+                }
+            }
             RefreshListBox();
         }
 
@@ -453,12 +461,12 @@ namespace Sc2ReplayMonkey
         private void InitSc2Workers()
         {
             m_Workers = new Dictionary<String, String>();
-            m_Workers.Add("Terr", m_CurrentDirectory + @"\Resources\Pictures\SC2 Workers\scv.png");
-            m_Workers.Add("Terran", m_CurrentDirectory + @"\Resources\Pictures\SC2 Workers\scv.png");
-            m_Workers.Add("Prot", m_CurrentDirectory + @"\Resources\Pictures\SC2 Workers\probe.png");
-            m_Workers.Add("Protoss", m_CurrentDirectory + @"\Resources\Pictures\probe.png");
-            m_Workers.Add("Zerg", m_CurrentDirectory + @"\Resources\Pictures\SC2 Workers\drone.png");
-            m_Workers.Add("RAND", m_CurrentDirectory + @"\Resources\Pictures\SC2 workers\random.png");
+            m_Workers.Add("Terr", m_CurrentDirectory + @"\SC2 Workers\scv.png");
+            m_Workers.Add("Terran", m_CurrentDirectory + @"\SC2 Workers\scv.png");
+            m_Workers.Add("Prot", m_CurrentDirectory + @"\SC2 Workers\probe.png");
+            m_Workers.Add("Protoss", m_CurrentDirectory + @"\SC2 Workers\probe.png");
+            m_Workers.Add("Zerg", m_CurrentDirectory + @"\SC2 Workers\drone.png");
+            m_Workers.Add("RAND", m_CurrentDirectory + @"\SC2 workers\random.png");
         }
 
         private void InitSc2ToWPFColorsDict()
@@ -578,7 +586,7 @@ namespace Sc2ReplayMonkey
         private Dictionary<Int32, String> m_TargetStringDict = null;
         private Dictionary<String, String> m_Maps = null;
         private Dictionary<String, String> m_Workers = null;
-        String m_CurrentDirectory = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString();
+        String m_CurrentDirectory = Directory.GetCurrentDirectory();
         #endregion
 
     }

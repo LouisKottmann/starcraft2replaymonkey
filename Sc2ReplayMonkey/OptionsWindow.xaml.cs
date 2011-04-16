@@ -77,6 +77,16 @@ namespace Sc2ReplayMonkey
             this.Close();
         }
 
+        private void checkBoxFullDelete_Checked(object sender, RoutedEventArgs e)
+        {
+            m_Config.FullDelete = true;
+        }
+
+        private void checkBoxFullDelete_Unchecked(object sender, RoutedEventArgs e)
+        {
+            m_Config.FullDelete = false;
+        }
+
         IConfig m_Config = null;
     }
 }
