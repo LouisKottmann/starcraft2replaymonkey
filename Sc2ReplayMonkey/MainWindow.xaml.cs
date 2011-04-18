@@ -142,6 +142,22 @@ namespace Sc2ReplayMonkey
             m_Logic.ShowOptions();
         }
 
+        private void comboPlayer1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboPlayer1.Items != null && comboPlayer1.Items.Count > 0 && comboPlayer1.SelectedItem != null)
+            {
+                m_Logic.UpdateSelectedPlayer(comboPlayer1.SelectedItem.ToString(), chartAPMPlayer1);
+            }
+        }
+
+        private void comboPlayer2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboPlayer2.Items != null && comboPlayer2.Items.Count > 0 && comboPlayer2.SelectedItem != null)
+            {
+                m_Logic.UpdateSelectedPlayer(comboPlayer2.SelectedItem.ToString(), chartAPMPlayer2);
+            }
+        }
+
         ParsedData CurrentDataParsed = new ParsedData();
         IMonkeyDeserializer m_IMonkeyDeserializer = null;
         IFileHandlingBaboon m_IFileHandlingBaboon = null;

@@ -32,6 +32,7 @@ using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Windows;
+using System.Windows.Controls.DataVisualization.Charting;
 
 namespace Sc2ReplayMonkey
 {
@@ -87,6 +88,11 @@ namespace Sc2ReplayMonkey
             OptionsWindow optionsWindow = new OptionsWindow(m_Main);
             optionsWindow.Owner = m_Main;
             optionsWindow.ShowDialog();
+        }
+
+        public void UpdateSelectedPlayer(String playerName, LineSeries chart)
+        {
+            GenerateChart(playerName, chart);
         }
 
         public void RelocateReplay()
@@ -174,11 +180,17 @@ namespace Sc2ReplayMonkey
                 m_IMonkeyDeserializer.DeserializeReplay(XMLFilePath);
                 m_CurrentData = m_IMonkeyDeserializer.CurrentReplayData;
                 GenerateTargetStringDict();
+                InitComboBoxes();
                 UpdateChatLogContent();
                 UpdateCurrentMap();
                 UpdatePlayersInfo();
                 UpdateGameInfo();
                 UpdateOtherInfo();
+                m_Main.comboPlayer1.SelectedIndex = 0;
+                if (m_Main.comboPlayer2.Items.Count > 1)
+                {
+                    m_Main.comboPlayer2.SelectedIndex = 1;
+                }
             }
         }
 
@@ -259,6 +271,44 @@ namespace Sc2ReplayMonkey
         #endregion
 
         #region Private methods
+        private void InitComboBoxes()
+        {
+            if (m_CurrentData != null && m_CurrentData.PlayersInfo != null)
+            {
+                m_Main.comboPlayer1.Items.Clear();
+                m_Main.comboPlayer2.Items.Clear();
+                foreach (PlayerInfo player in m_CurrentData.PlayersInfo)
+                {
+                    if (!player.isObserver && !player.isComputer)
+                    {
+                        m_Main.comboPlayer1.Items.Add(player.Name);
+                        m_Main.comboPlayer2.Items.Add(player.Name);
+                    }
+                }
+            }            
+        }
+
+        private void GenerateChart(String playerName, LineSeries chart)
+        {
+            PlayerInfo playerRequested = m_CurrentData.PlayersInfo[GetPlayerIDFromName(playerName)];
+            Dictionary<Int32, Int32> items = new Dictionary<Int32, Int32>(((m_CurrentData.GameLength / 60) + 1));
+            items.Add(0, 0);
+            Int32 count = 0;
+            foreach (KeyValuePair<Int32, Int32> apmValue in playerRequested.Apm)
+            {
+                if (apmValue.Key / 60 > count)
+                {
+                    count++;
+                    items.Add(count, 0);
+                }
+                items[count] += apmValue.Value;
+            }
+
+            items[items.Count - 1] = Convert.ToInt32(Convert.ToDouble(items[items.Count - 1]) * (1 / ((Convert.ToDouble(m_CurrentData.GameLength % 60)) / 60)));
+            chart.ItemsSource = items;
+            chart.LegendItems.Clear();
+        }
+
         private void UpdateOtherInfo()
         {
             m_Main.LabelRealmValue.Content = m_CurrentData.Realm;
@@ -282,10 +332,11 @@ namespace Sc2ReplayMonkey
             m_Main.labelMapName.Content = m_CurrentData.MapName;
         }
 
-        private void FillPlayerInfoControl(Label labelToFill, Image imageToFill, Image randomImageControl, Brush labelColor, String playerName, String SRace, String LRace)
+        private void FillPlayerInfoControl(Label labelToFill, Image imageToFill, Image randomImageControl, Int32 apm, Label labelApm, Brush labelColor, String playerName, String SRace, String LRace)
         {
             labelToFill.Content = playerName;
             labelToFill.Foreground = labelColor;
+            labelApm.Content = "APM: " + apm;
 
             if (SRace == "RAND")
             {
@@ -359,17 +410,23 @@ namespace Sc2ReplayMonkey
                         {
                             break;
                         }
-
+                        Int32 playerAPM = 0;
                         String playerName = playerInfo.Name;
                         if (playerInfo.isComputer)
                         {
                             playerName += " (" + playerInfo.Difficulty + ")";
+                        }
+                        if(!playerInfo.isComputer)
+                        {
+                            playerAPM = Convert.ToInt32(Convert.ToDouble(playerInfo.ApmTotal) / Convert.ToDouble(m_CurrentData.GameLength/60));
                         }
                         if (playerInfo.Team == 1)
                         {
                             FillPlayerInfoControl(m_Main.labelPlayer1Team1, 
                                                   m_Main.imageWorkerP1T1, 
                                                   m_Main.randomImageP1T1,
+                                                  playerAPM,
+                                                  m_Main.labelAPMP1T1,
                                                   m_Sc2ToWPFColors[playerInfo.sColor], 
                                                   playerName, 
                                                   playerInfo.sRace,
@@ -380,6 +437,8 @@ namespace Sc2ReplayMonkey
                             FillPlayerInfoControl(m_Main.labelPlayer1Team2,
                                                   m_Main.imageWorkerP1T2,
                                                   m_Main.randomImageP1T2,
+                                                  playerAPM,
+                                                  m_Main.labelAPMP1T2,
                                                   m_Sc2ToWPFColors[playerInfo.sColor], 
                                                   playerName,
                                                   playerInfo.sRace,
@@ -396,11 +455,15 @@ namespace Sc2ReplayMonkey
                         {
                             break;
                         }
-
+                        Int32 playerAPM = 0;
                         String playerName = playerInfo.Name;
                         if (playerInfo.isComputer)
                         {
                             playerName += " (" + playerInfo.Difficulty + ")";
+                        }
+                        if (!playerInfo.isComputer)
+                        {
+                            playerAPM = Convert.ToInt32(Convert.ToDouble(playerInfo.ApmTotal) / Convert.ToDouble(m_CurrentData.GameLength / 60));
                         }
 
                         if (playerInfo.Team == 1)
@@ -410,6 +473,8 @@ namespace Sc2ReplayMonkey
                                 FillPlayerInfoControl(m_Main.labelPlayer1Team1,
                                                       m_Main.imageWorkerP1T1,
                                                       m_Main.randomImageP1T1,
+                                                      playerAPM,
+                                                      m_Main.labelAPMP1T1,
                                                       m_Sc2ToWPFColors[playerInfo.sColor],
                                                       playerName,
                                                       playerInfo.sRace,
@@ -421,6 +486,8 @@ namespace Sc2ReplayMonkey
                                 FillPlayerInfoControl(m_Main.labelPlayer2Team1,
                                                       m_Main.imageWorkerP2T1,
                                                       m_Main.randomImageP2T1,
+                                                      playerAPM,
+                                                      m_Main.labelAPMP2T1,
                                                       m_Sc2ToWPFColors[playerInfo.sColor],
                                                       playerName,
                                                       playerInfo.sRace,
@@ -434,6 +501,8 @@ namespace Sc2ReplayMonkey
                                 FillPlayerInfoControl(m_Main.labelPlayer1Team2,
                                                      m_Main.imageWorkerP1T2,
                                                      m_Main.randomImageP1T2,
+                                                     playerAPM,
+                                                     m_Main.labelAPMP1T2,
                                                      m_Sc2ToWPFColors[playerInfo.sColor],
                                                      playerName,
                                                      playerInfo.sRace,
@@ -445,6 +514,8 @@ namespace Sc2ReplayMonkey
                                 FillPlayerInfoControl(m_Main.labelPlayer2Team2,
                                                       m_Main.imageWorkerP2T2,
                                                       m_Main.randomImageP2T2,
+                                                      playerAPM,
+                                                      m_Main.labelAPMP2T2,
                                                       m_Sc2ToWPFColors[playerInfo.sColor],
                                                       playerName,
                                                       playerInfo.sRace,
@@ -574,6 +645,18 @@ namespace Sc2ReplayMonkey
                 m_TargetStringDict.Add(player.ID, player.Name);
             }
         }
+
+        private Int32 GetPlayerIDFromName(String name)
+        {
+            foreach (KeyValuePair<Int32, String> pair in m_TargetStringDict)
+            {
+                if (pair.Value == name)
+                {
+                    return pair.Key - 1;
+                }
+            }
+            return 0;
+        }
         #endregion
 
         #region Member variables
@@ -588,6 +671,5 @@ namespace Sc2ReplayMonkey
         private Dictionary<String, String> m_Workers = null;
         String m_CurrentDirectory = Directory.GetCurrentDirectory();
         #endregion
-
     }
 }

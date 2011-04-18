@@ -2,7 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-        xmlns:local="clr-namespace:Sc2ReplayMonkey" ResizeMode="CanResize"
+        xmlns:local="clr-namespace:Sc2ReplayMonkey"
+        xmlns:DV="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:DVC="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        ResizeMode="CanResize"
         Title="Starcraft II Replay Monkey"
         Width="991" Icon="Resources\Icons\SC2_Replay_Monkey.png"
         d:DesignHeight="1024" MinHeight="850" Visibility="Visible" Foreground="#00000000" Margin="0" Closed="Window_Closed"
@@ -117,16 +120,18 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">                                            
+                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Label Name="labelAPMP1T1" Style="{StaticResource labelStyle}"/>
                                             <Image Name="imageWorkerP1T1" Height="20"/>
-                                            <Image Name="randomImageP1T1" Height="20"/>
+                                            <Image Name="randomImageP1T1" Height="20"/>                                            
                                         </StackPanel>
                                         <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team1" Content="Player1Team1" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">                                            
+                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Label Name="labelAPMP2T1" Style="{StaticResource labelStyle}"/>
                                             <Image Name="imageWorkerP2T1" Height="20"/>
-                                            <Image Name="randomImageP2T1" Height="20"/>
+                                            <Image Name="randomImageP2T1" Height="20"/>                                            
                                         </StackPanel>
                                         <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team1" Content="Player2Team1" />
                                     </StackPanel>
@@ -138,16 +143,18 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">                                            
+                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Label Name="labelAPMP2T2" Style="{StaticResource labelStyle}"/>
                                             <Image Name="imageWorkerP2T2" Height="20"/>
-                                            <Image Name="randomImageP2T2" Height="20"/>
+                                            <Image Name="randomImageP2T2" Height="20"/>                                            
                                         </StackPanel>
                                         <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team2" Content="Player2Team2" />                                        
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">                                            
+                                        <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Label Name="labelAPMP1T2" Style="{StaticResource labelStyle}"/>
                                             <Image Name="imageWorkerP1T2" Height="20"/>
-                                            <Image Name="randomImageP1T2" Height="20"/>
+                                            <Image Name="randomImageP1T2" Height="20"/>                                            
                                         </StackPanel>
                                         <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team2" Content="Player1Team2" />
                                     </StackPanel>
@@ -290,12 +297,116 @@
                               HorizontalAlignment="Stretch" 
                               VerticalAlignment="Stretch" 
                               Width="Auto">
-                        <ListBox Style="{StaticResource ListboxStyle}" Margin="5" Name="listBoxAvailableReplays" Background="Transparent" SelectionChanged="listBoxAvailableReplays_SelectionChanged"/>
+                        <ListBox Style="{StaticResource ListboxStyle}" 
+                                 Margin="5" 
+                                 Name="listBoxAvailableReplays" 
+                                 Background="Transparent" 
+                                 SelectionChanged="listBoxAvailableReplays_SelectionChanged"/>
                     </GroupBox>                    
                 </Grid>
             </TabItem>
-            <TabItem Style="{StaticResource tabItemMainStyle}" Header="Bank" Name="tabItemBank">
-                <Grid Background="Transparent"  />
+            <TabItem Style="{StaticResource tabItemMainStyle}" Header="APM and Events" Name="tabItemBank">
+                <!-- This grid holds the players names -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Name="comboPlayer1" 
+                                  Grid.Row="0" Grid.Column="0" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center"
+                                  SelectionChanged="comboPlayer1_SelectionChanged">
+                        <ComboBox.LayoutTransform>
+                            <RotateTransform Angle="270" />
+                        </ComboBox.LayoutTransform>
+                        <ComboBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" IsItemsHost="True">
+                                    <StackPanel.LayoutTransform>
+                                        <RotateTransform Angle="90" />
+                                    </StackPanel.LayoutTransform>
+                                </StackPanel>
+                            </ItemsPanelTemplate>
+                        </ComboBox.ItemsPanel>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="315" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                    <ComboBox Name="comboPlayer2" 
+                                  Grid.Row="1" Grid.Column="0"
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center"
+                                  SelectionChanged="comboPlayer2_SelectionChanged">
+                        <ComboBox.LayoutTransform>
+                            <RotateTransform Angle="270" />
+                        </ComboBox.LayoutTransform>
+                        <ComboBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" IsItemsHost="True" Background="Transparent">
+                                    <StackPanel.LayoutTransform>
+                                        <RotateTransform Angle="90" />
+                                    </StackPanel.LayoutTransform>
+                                </StackPanel>
+                            </ItemsPanelTemplate>
+                        </ComboBox.ItemsPanel>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="315" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                    <GroupBox Style="{StaticResource groupBoxStyle}" Header="APM" Grid.Row="0" Grid.Column="1">
+                        <DVC:Chart TextElement.Foreground="White" Background="#00005555">
+                            <DVC:LineSeries 
+                                    Name="chartAPMPlayer1"                                       
+                                    ItemsSource="{Binding}"
+                                    IndependentValuePath="Key" 
+                                    DependentValuePath="Value" 
+                                    Title="APM">
+                                <DVC:LineSeries.DependentRangeAxis>
+                                    <DVC:LinearAxis Orientation="Y" ShowGridLines="True" Minimum="0"/>
+                                </DVC:LineSeries.DependentRangeAxis>
+                            </DVC:LineSeries>
+                        </DVC:Chart>
+                    </GroupBox>
+                    <GroupBox Style="{StaticResource groupBoxStyle}" Header="APM" Grid.Row="1" Grid.Column="1">
+                        <DVC:Chart TextElement.Foreground="White" Background="#00005555">
+                            <DVC:LineSeries 
+                                    Name="chartAPMPlayer2"                                       
+                                    ItemsSource="{Binding}"
+                                    IndependentValuePath="Key" 
+                                    DependentValuePath="Value" 
+                                    Title="APM">
+                                <DVC:LineSeries.DependentRangeAxis>
+                                    <DVC:LinearAxis Orientation="Y" ShowGridLines="True" Minimum="0"/>
+                                </DVC:LineSeries.DependentRangeAxis>
+                            </DVC:LineSeries>
+                        </DVC:Chart>
+                    </GroupBox>
+                    <GroupBox Style="{StaticResource groupBoxStyle}" Header="Events" Grid.Row="0" Grid.Column="2" Margin="5,0,0,0">
+                        <ListBox Name="listBoxPlayer1" Background="#00005555" Margin="5"/>
+                    </GroupBox>
+                    <GroupBox Style="{StaticResource groupBoxStyle}" Header="Events" Grid.Row="1" Grid.Column="2" Margin="5,0,0,0">
+                        <ListBox Name="listBoxPlayer2" Background="#00005555" Margin="5"/>
+                    </GroupBox>
+                </Grid>
             </TabItem>
             <TabItem Style="{StaticResource tabItemMainStyle}" Header="Bonus" Name="tabItemBonus">
                 <Grid Background="Transparent" />
