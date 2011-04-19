@@ -64,7 +64,14 @@ namespace Sc2ReplayMonkey
 
         void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            m_IFileHandlingBaboon.HandleFiles(m_ReplaysToParse);
+            try
+            {
+                m_IFileHandlingBaboon.HandleFiles(m_ReplaysToParse);
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show("Error encoutered: " + except.Message + "\nStackTrace: " + except.StackTrace, "Error while parsing the replay");
+            }
         }
 
         BackgroundWorker worker = new BackgroundWorker();

@@ -78,6 +78,8 @@ namespace Sc2ReplayMonkey
                 m_Main.randomImageP2T1.Source = null;
                 m_Main.randomImageP1T2.Source = null;
                 m_Main.randomImageP2T2.Source = null;
+                m_Main.chartAPMPlayer1.ItemsSource = null;
+                m_Main.chartAPMPlayer2.ItemsSource = null;
                 m_Main.labelWinner.Content = "?";
                 m_Main.labelWinner.Foreground = Brushes.White;
             }
