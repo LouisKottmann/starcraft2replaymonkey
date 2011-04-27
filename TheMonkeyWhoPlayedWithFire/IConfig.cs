@@ -16,5 +16,23 @@ namespace Sc2ReplayMonkey
         Boolean AutoRelocate { get; set; }
 
         Boolean FullDelete { get; set; }
+
+        Boolean DoNotShowSc2NotFoundError { get; set; }
+
+        String RenameFormat { get; set; }
+
+        Boolean AutoRename { get; set; }
+
+        RenamingType ChosenRenamingType { get; set; }
+    }
+
+    public enum RenamingType
+    {
+        Personalized,
+        Formatted1,
+        Formatted2,
+        Formatted3,
+        Custom,
+        None,
     }
 }

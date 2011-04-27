@@ -48,6 +48,8 @@ namespace Sc2ReplayMonkey
 
             textBoxRelocatePath.Text = m_Config.RelocatePath;
             checkBoxAutoRelocate.IsChecked = m_Config.AutoRelocate;
+            checkBoxDoNotShowSc2NotFoundError.IsChecked = m_Config.DoNotShowSc2NotFoundError;
+            checkBoxAutoRename.IsChecked = m_Config.AutoRename;
         }
 
         private void buttonRelocatePath_Click(object sender, RoutedEventArgs e)
@@ -72,6 +74,16 @@ namespace Sc2ReplayMonkey
             m_Config.AutoRelocate = false;
         }
 
+        private void checkBoxDoNotShowSc2NotFoundError_Checked(object sender, RoutedEventArgs e)
+        {
+            m_Config.DoNotShowSc2NotFoundError = true;
+        }
+
+        private void checkBoxDoNotShowSc2NotFoundError_Unchecked(object sender, RoutedEventArgs e)
+        {
+            m_Config.DoNotShowSc2NotFoundError = false;
+        }
+
         private void buttonCloseOptionsWindow_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -85,6 +97,16 @@ namespace Sc2ReplayMonkey
         private void checkBoxFullDelete_Unchecked(object sender, RoutedEventArgs e)
         {
             m_Config.FullDelete = false;
+        }
+
+        private void checkBoxAutoRename_Checked(object sender, RoutedEventArgs e)
+        {
+            m_Config.AutoRename = true;
+        }
+
+        private void checkBoxAutoRename_Unchecked(object sender, RoutedEventArgs e)
+        {
+            m_Config.AutoRename = false;
         }
 
         IConfig m_Config = null;

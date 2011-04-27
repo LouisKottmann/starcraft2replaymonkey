@@ -11,5 +11,7 @@ namespace TheMonkeyWhoPlayedWithFire
         void DeserializeReplay(String path);
 
         ParsedData CurrentReplayData { get; set; }
+
+        String CurrentReplayComment { get; set; }
     }
 }

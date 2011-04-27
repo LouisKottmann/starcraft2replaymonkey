@@ -32,6 +32,12 @@
         <Setter Property="Background" Value="Black" />
     </Style>
     
+    <Style x:Key="expanderStyle" TargetType="{x:Type Expander}">
+        <Setter Property="TextElement.Foreground" Value="White" />
+        <Setter Property="FontFamily" Value="Buxton Sketch" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    
     <Style x:Key="WindowTextelement" TargetType="{x:Type TextBlock}">
         <Setter Property="TextElement.Foreground" Value="White" />
         <Setter Property="FontFamily" Value="Buxton Sketch" />
@@ -63,7 +69,53 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style x:Key="textBoxStyle" TargetType="TextBox">
+        <Setter Property="TextElement.Foreground" Value="White" />
+        <Setter Property="TextElement.FontFamily" Value="Buxton Sketch" />
+        <Setter Property="BorderBrush" Value="Black"/>        
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="MinHeight" Value="20"/>
+        <Setter Property="AllowDrop" Value="true"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                    <Border      
+                      Name="Border"    
+                      CornerRadius="2"      
+                      Padding="2"    
+                      Background="White"    
+                      BorderBrush="Black"    
+                      BorderThickness="1">
+                        <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="DarkGray"/>
+                            <Setter Property="Foreground" Value="Purple"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="True">
+                            <Setter TargetName="Border" Property="Background">
+                                <Setter.Value>
+                                    <RadialGradientBrush Opacity="0.5" RadiusY="1" RadiusX="1">
+                                        <GradientStop Color="Black" Offset="0"/>
+                                        <GradientStop Color="Black" Offset="0.5"/>
+                                        <GradientStop Color="DarkGray" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="checkboxStyle" TargetType="CheckBox">
         <Setter Property="TextElement.Foreground" Value="White" />
         <Setter Property="TextElement.FontFamily" Value="Buxton Sketch" />

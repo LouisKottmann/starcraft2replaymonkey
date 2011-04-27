@@ -8,12 +8,14 @@
         ResizeMode="CanResize"
         Title="Starcraft II Replay Monkey"
         Width="991" Icon="Resources\Icons\SC2_Replay_Monkey.png"
-        d:DesignHeight="1024" MinHeight="850" Visibility="Visible" Foreground="#00000000" Margin="0" Closed="Window_Closed"
+        d:DesignHeight="1024" MinHeight="900" MinWidth="1000" Visibility="Visible" Foreground="#00000000" Margin="0" Closed="Window_Closed"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+    <Window.Resources>
+        <local:ConverterListBoxSelection x:Key="ConverterListBoxSelection"/>
+    </Window.Resources>
     <DockPanel Style="{StaticResource styleBackground}">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Style="{StaticResource GlassButton}"  
-                Grid.Row="0" 
                 Name="buttonSkin"                                
                 Click="buttonSkin_Click" 
                 Height="60" 
@@ -25,7 +27,6 @@
                 </Button.Content>
             </Button>
             <Button Style="{StaticResource GlassButton}"
-                Grid.Row="0"
                 Name="buttonOptions"
                 Click="buttonOptions_Click"
                 Height="60"
@@ -38,7 +39,6 @@
                 </Button.Content>
             </Button>
             <Button Style="{StaticResource GlassButton}"
-                Grid.Row="0" 
                 Name="buttonAddFiles" 
                 Click="buttonAddFiles_Click"
                 Height="60"                
@@ -52,6 +52,7 @@
             </Button>
         </StackPanel>
         <TabControl DockPanel.Dock="Top" Margin="7,0,7,7" Name="tabControlMain" Background="Transparent">
+            <!-- First tab: Game general information -->
             <TabItem Style="{StaticResource tabItemMainStyle}" Header="Main" Name="tabItemMain" >
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
@@ -125,7 +126,7 @@
                                             <Image Name="imageWorkerP1T1" Height="20"/>
                                             <Image Name="randomImageP1T1" Height="20"/>                                            
                                         </StackPanel>
-                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team1" Content="Player1Team1" />
+                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team1" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -133,7 +134,7 @@
                                             <Image Name="imageWorkerP2T1" Height="20"/>
                                             <Image Name="randomImageP2T1" Height="20"/>                                            
                                         </StackPanel>
-                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team1" Content="Player2Team1" />
+                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team1" />
                                     </StackPanel>
                                 </Grid>
                                 <Image Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{StaticResource versus}"/>
@@ -148,7 +149,7 @@
                                             <Image Name="imageWorkerP2T2" Height="20"/>
                                             <Image Name="randomImageP2T2" Height="20"/>                                            
                                         </StackPanel>
-                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team2" Content="Player2Team2" />                                        
+                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer2Team2" />                                        
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" FlowDirection="RightToLeft" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -156,7 +157,7 @@
                                             <Image Name="imageWorkerP1T2" Height="20"/>
                                             <Image Name="randomImageP1T2" Height="20"/>                                            
                                         </StackPanel>
-                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team2" Content="Player1Team2" />
+                                        <Label Style="{StaticResource labelStyle}" Name="labelPlayer1Team2" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -176,7 +177,7 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" FlowDirection="LeftToRight">
-                                    <Label Style="{StaticResource labelStyle}" Content="Game Date" Name="labelGameDate" />
+                                    <Label Style="{StaticResource labelStyle}" Content="Game Date:" Name="labelGameDate" />
                                     <Label Style="{StaticResource labelStyle}" Name="labelDate" />
                                 </StackPanel>
                                 <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" FlowDirection="LeftToRight">
@@ -184,7 +185,13 @@
                                     <Label Style="{StaticResource labelStyle}" Name="labelLength" />
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" FlowDirection="LeftToRight">
-                                    <Button Style="{StaticResource GlassButton}" Content="Show Winner" TextElement.FontSize="20" Name="buttonShowWinner" Width="147" Click="buttonShowWinner_Click"/>
+                                    <Button Style="{StaticResource GlassButton}"
+                                            Content="Show Winner" 
+                                            TextElement.FontSize="20" 
+                                            Name="buttonShowWinner" 
+                                            Width="147" 
+                                            Click="buttonShowWinner_Click" 
+                                            IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}"/>
                                     <Label Style="{StaticResource labelStyle}" Content="Winner"  Name="labelWinner" />
                                 </StackPanel>                                
                             </Grid>
@@ -246,6 +253,7 @@
                                 </Grid>                                
                             </Grid>
                         </GroupBox>
+                        <!-- This groupbox contains the actions buttons (WATCH, RELOCATE, DELETE, RENAME -->
                         <GroupBox Style="{StaticResource groupBoxStyle}" 
                                   Grid.Column="0" Grid.Row="1"
                                   Header="Actions" 
@@ -253,42 +261,55 @@
                                   Width="270"
                                   HorizontalAlignment="Center"
                                   Name="groupBoxActions">
-                            <DockPanel>                                
+                            <Grid>  
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
                                 <Button Style="{StaticResource GlassButton}" 
-                                        DockPanel.Dock="Left"
+                                        Grid.Row="0" Grid.Column="0"
                                         Margin="3" 
                                         Name="buttonWatchReplay"                                          
-                                        Width="120"
-                                        Click="buttonWatchReplay_Click">
-                                    <Button.Content>
-                                        <Label Style="{StaticResource labelStyle}" Content="WATCH" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </Button.Content>
+                                        Width="120" 
+                                        Content="WATCH"
+                                        FontSize="25"
+                                        Click="buttonWatchReplay_Click"
+                                        IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}">
                                 </Button>
+                                <Button Style="{StaticResource GlassButton}"
+                                        Grid.Row="1" Grid.Column="0"
+                                        Margin="3"
+                                        Name="buttonRename"
+                                        Width="120" 
+                                        Content="RENAME"
+                                        FontSize="25"
+                                        Click="buttonRename_Click"
+                                        IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}"/>
                                 <Button Style="{StaticResource GlassButton}" 
-                                        DockPanel.Dock="Top"
+                                        Grid.Row="0" Grid.Column="1"
                                         Margin="3" 
                                         Name="buttonRelocateReplay" 
                                         Width="120" 
-                                        Height="120"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Bottom" 
                                         Content="RELOCATE"
-                                        TextElement.FontSize="15"
-                                        Click="buttonRelocateReplay_Click"/>
+                                        TextElement.FontSize="25"
+                                        Click="buttonRelocateReplay_Click"
+                                        IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}"/>
                                 <Button Style="{StaticResource GlassButton}"
-                                        DockPanel.Dock="Bottom"
+                                        Grid.Row="1" Grid.Column="1"
                                         Margin="3" 
                                         Name="buttonDeleteReplay" 
                                         Width="120"
-                                        Height="120"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Top" 
                                         Content="DELETE"
-                                        TextElement.FontSize="15"
-                                        Click="buttonDeleteReplay_Click"/>
-                            </DockPanel>
+                                        TextElement.FontSize="25"
+                                        Click="buttonDeleteReplay_Click"
+                                        IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}"/>
+                            </Grid>
                         </GroupBox>
-                    </Grid>                    
+                    </Grid>
                     <GroupBox Style="{StaticResource groupBoxStyle}" 
                               Grid.Column="2" Grid.Row="0"
                               Header="Replay Bank" 
@@ -297,14 +318,45 @@
                               HorizontalAlignment="Stretch" 
                               VerticalAlignment="Stretch" 
                               Width="Auto">
-                        <ListBox Style="{StaticResource ListboxStyle}" 
-                                 Margin="5" 
-                                 Name="listBoxAvailableReplays" 
-                                 Background="Transparent" 
-                                 SelectionChanged="listBoxAvailableReplays_SelectionChanged"/>
-                    </GroupBox>                    
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ListBox Style="{StaticResource ListboxStyle}" 
+                                     Grid.Row="0"
+                                     Margin="5" 
+                                     Name="listBoxAvailableReplays" 
+                                     Background="Transparent" 
+                                     SelectionChanged="listBoxAvailableReplays_SelectionChanged"
+                                     />
+                            <GroupBox Style="{StaticResource groupBoxStyle}" Header="Comment" Grid.Row="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Style="{StaticResource textBoxStyle}"
+                                         Grid.Column="0"
+                                         Name="textboxComment"                                                          
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         MaxLines="10"
+                                         IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}">
+                                    </TextBox>
+                                    <Button Style="{StaticResource GlassButton}"
+                                            Name="buttonSaveComment"
+                                            Grid.Column="1"
+                                            Content="Save" 
+                                            Click="buttonSaveComment_Click"
+                                            IsEnabled="{Binding Path=SelectedIndex, ElementName=listBoxAvailableReplays, Converter={StaticResource ConverterListBoxSelection}}"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
+            <!-- Second tab starts here: APM AND EVENTS -->
             <TabItem Style="{StaticResource tabItemMainStyle}" Header="APM and Events" Name="tabItemBank">
                 <!-- This grid holds the players names -->
                 <Grid>
@@ -401,10 +453,10 @@
                         </DVC:Chart>
                     </GroupBox>
                     <GroupBox Style="{StaticResource groupBoxStyle}" Header="Events" Grid.Row="0" Grid.Column="2" Margin="5,0,0,0">
-                        <ListBox Name="listBoxPlayer1" Background="#00005555" Margin="5"/>
+                        <ListBox Style="{StaticResource ListboxStyle}" Name="listBoxPlayer1" Background="#00005555" Margin="5"/>
                     </GroupBox>
                     <GroupBox Style="{StaticResource groupBoxStyle}" Header="Events" Grid.Row="1" Grid.Column="2" Margin="5,0,0,0">
-                        <ListBox Name="listBoxPlayer2" Background="#00005555" Margin="5"/>
+                        <ListBox Style="{StaticResource ListboxStyle}" Name="listBoxPlayer2" Background="#00005555" Margin="5"/>
                     </GroupBox>
                 </Grid>
             </TabItem>

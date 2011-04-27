@@ -15,12 +15,14 @@ namespace TheMonkeyWhoPlayedWithFire
 
         Dictionary<String, String> AvailableReplays { get; set; }
 
+        Dictionary<String, String> Comments { get; set; }
+
         void AddParsedReplayToAvailables(String ReplayPath, String DataPath);
 
         void RemoveReplayFromAvailables(String ReplayPath);
 
-        void ChangeParsedReplayPath(String ReplayXmlPath, String NewPath);
+        void ChangeParsedReplayPath(String ReplayXmlPath, String NewPath, String OldPath);
 
-        void DeserializeAvailables();
+        void SaveComment(String Comment, String ReplayPath);
     }
 }

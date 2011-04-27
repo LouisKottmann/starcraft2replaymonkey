@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Sc2ReplayMonkey.OptionsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OptionsWindow" Height="200" Width="Auto" WindowStartupLocation="CenterOwner" Background="#00005555" AllowsTransparency="True" WindowStyle="None">
+        Height="Auto" Width="Auto" WindowStartupLocation="CenterOwner" Background="#00005555" AllowsTransparency="True" WindowStyle="None">
     <GroupBox Style="{StaticResource noBorderWindow}" Header="Options" TextElement.FontSize="20">
         <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
@@ -11,7 +11,9 @@
                 <CheckBox Name="checkBoxAutoRelocate" Style="{StaticResource checkboxStyle}" Checked="checkBoxAutoRelocate_Checked" Unchecked="checkBoxAutoRelocate_Unchecked" Content="Auto" VerticalAlignment="Center" Margin="5,0,5,0"/>
             </StackPanel>
             <CheckBox Name="checkBoxFullDelete" Style="{StaticResource checkboxStyle}" FlowDirection="RightToLeft" Checked="checkBoxFullDelete_Checked" Unchecked="checkBoxFullDelete_Unchecked" Content="Make the DELETE button delete the replay too" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" />
-            <Button Style="{StaticResource GlassButton}" Name="buttonCloseOptionsWindow" Click="buttonCloseOptionsWindow_Click" Content="Close" HorizontalAlignment="Right" Margin="5"/>
+            <CheckBox Name="checkBoxDoNotShowSc2NotFoundError" Style="{StaticResource checkboxStyle}" FlowDirection="RightToLeft" Checked="checkBoxDoNotShowSc2NotFoundError_Checked" Unchecked="checkBoxDoNotShowSc2NotFoundError_Unchecked" Content="Do not show Starcraft II not found error" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" />
+            <CheckBox Name="checkBoxAutoRename" Style="{StaticResource checkboxStyle}" FlowDirection="RightToLeft" Checked="checkBoxAutoRename_Checked" Unchecked="checkBoxAutoRename_Unchecked" Content="Automatically rename replays" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" />
+            <Button Style="{StaticResource GlassButton}" Name="buttonCloseOptionsWindow" Click="buttonCloseOptionsWindow_Click" Content="Close" HorizontalAlignment="Right" Margin="5"/>            
         </StackPanel>
     </GroupBox>
 </Window>

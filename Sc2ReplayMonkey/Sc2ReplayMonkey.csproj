@@ -87,11 +87,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ControlsLogic.cs" />
+    <Compile Include="ConverterListBoxSelection.cs" />
+    <Compile Include="MidLevelLogic.cs" />
     <Compile Include="OptionsWindow.xaml.cs">
       <DependentUpon>OptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PleaseWaitWindow.xaml.cs">
       <DependentUpon>PleaseWaitWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RenameWindow.xaml.cs">
+      <DependentUpon>RenameWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SkinSelectorWindow.xaml.cs">
       <DependentUpon>SkinSelectorWindow.xaml</DependentUpon>
@@ -111,6 +116,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
+    <Page Include="RenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Skins\BaseSkin.xaml">
       <SubType>Designer</SubType>

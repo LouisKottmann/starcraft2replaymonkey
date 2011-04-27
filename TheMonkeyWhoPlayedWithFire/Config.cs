@@ -33,9 +33,15 @@ namespace Sc2ReplayMonkey
         public Config()
         {
             AutoRelocate = false;
+            AutoRename = false;
             FullDelete = false;
-            IoC.AddMonkey<IConfig>(this);
+            DoNotShowSc2NotFoundError = false;
+            RelocatePath = String.Empty;
+            RenameFormat = String.Empty;
+            ChosenRenamingType = RenamingType.None;
             DeserializeConfig();
+
+            IoC.AddMonkey<IConfig>(this);
         }
 
         public void DeserializeConfig()
@@ -49,6 +55,42 @@ namespace Sc2ReplayMonkey
                 RelocatePath = rootNode.SelectSingleNode("RelocatePath").InnerXml;
                 AutoRelocate = Convert.ToBoolean(rootNode.SelectSingleNode("AutoRelocate").InnerXml);
                 FullDelete = Convert.ToBoolean(rootNode.SelectSingleNode("FullDelete").InnerXml);
+                if (rootNode["DoNotShowSc2NotFoundError"] != null)
+                {
+                    DoNotShowSc2NotFoundError = Convert.ToBoolean(rootNode.SelectSingleNode("DoNotShowSc2NotFoundError").InnerXml);
+                }
+                if (rootNode["AutoRename"] != null)
+                {
+                    AutoRename = Convert.ToBoolean(rootNode.SelectSingleNode("AutoRename").InnerXml);
+                }
+                if (rootNode["RenameFormat"] != null)
+                {
+                    RenameFormat = rootNode.SelectSingleNode("RenameFormat").InnerXml;
+                }
+                if (rootNode["ChosenRenamingType"] != null)
+                {
+                    switch (rootNode.SelectSingleNode("ChosenRenamingType").InnerXml)
+                    {
+                        case "Personalized":
+                            ChosenRenamingType = RenamingType.Personalized;
+                            break;
+                        case "Formatted1":
+                            ChosenRenamingType = RenamingType.Formatted1;
+                            break;
+                        case "Formatted2":
+                            ChosenRenamingType = RenamingType.Formatted2;
+                            break;
+                        case "Formatted3":
+                            ChosenRenamingType = RenamingType.Formatted3;
+                            break;
+                        case "Custom":
+                            ChosenRenamingType = RenamingType.Custom;
+                            break;
+                        default:
+                            ChosenRenamingType = RenamingType.None;
+                            break;
+                    }
+                }
             }
         }
 
@@ -70,6 +112,15 @@ namespace Sc2ReplayMonkey
             XmlElement relocatePathNode = FileHandlingBaboon.SerializeElement(doc, "RelocatePath", RelocatePath);
             XmlElement autoRelocateNode = FileHandlingBaboon.SerializeElement(doc, "AutoRelocate", AutoRelocate.ToString());
             XmlElement fullDeleteNode = FileHandlingBaboon.SerializeElement(doc, "FullDelete", FullDelete.ToString());
+            XmlElement doNotShowSc2NotFoundErrorNode = FileHandlingBaboon.SerializeElement(doc, "DoNotShowSc2NotFoundError", DoNotShowSc2NotFoundError.ToString());
+            XmlElement renameFormatNode = FileHandlingBaboon.SerializeElement(doc, "RenameFormat", RenameFormat);
+            XmlElement autoRenameNode = FileHandlingBaboon.SerializeElement(doc, "AutoRename", AutoRename.ToString());
+            XmlElement chosenRenamingTypeNode = FileHandlingBaboon.SerializeElement(doc, "ChosenRenamingType", ChosenRenamingType.ToString());
+
+            rootElement.AppendChild(autoRenameNode);
+            rootElement.AppendChild(chosenRenamingTypeNode);
+            rootElement.AppendChild(renameFormatNode);
+            rootElement.AppendChild(doNotShowSc2NotFoundErrorNode);
             rootElement.AppendChild(fullDeleteNode);
             rootElement.AppendChild(relocatePathNode);
             rootElement.AppendChild(autoRelocateNode);
@@ -79,9 +130,13 @@ namespace Sc2ReplayMonkey
             doc.Save(m_XmlPath);
         }
 
-        String m_XmlPath = Directory.GetCurrentDirectory() + @"\Config.xml";
+        private String m_XmlPath = Directory.GetCurrentDirectory() + @"\Config.xml";
         public String RelocatePath { get; set; }
         public Boolean AutoRelocate { get; set; }
         public Boolean FullDelete { get; set; }
+        public Boolean DoNotShowSc2NotFoundError { get; set; }
+        public String RenameFormat { get; set; }
+        public Boolean AutoRename { get; set; }
+        public RenamingType ChosenRenamingType { get; set; }        
     }
 }

@@ -39,7 +39,7 @@ namespace Sc2ReplayMonkey
     public class ControlsLogic
     {
         public ControlsLogic(MainWindow main)
-        {
+        {            
             InitSc2ToWPFColorsDict();
             InitSc2MapsLink();
             InitSc2Workers();
@@ -56,6 +56,30 @@ namespace Sc2ReplayMonkey
         }
 
         #region Public methods
+
+        public void UpdateDisplay(String XMLFilePath)
+        {
+            ClearInfos();
+            if (m_IMonkeyDeserializer != null)
+            {
+                m_IMonkeyDeserializer.DeserializeReplay(XMLFilePath);
+                m_CurrentData = m_IMonkeyDeserializer.CurrentReplayData;
+                GenerateTargetStringDict();
+                InitComboBoxes();
+                UpdateChatLogContent();
+                UpdateCurrentMap();
+                UpdatePlayersInfo();
+                UpdateGameInfo();
+                UpdateOtherInfo();
+                UpdateCommentBox();
+                m_Main.comboPlayer1.SelectedIndex = 0;
+                if (m_Main.comboPlayer2.Items.Count > 1)
+                {
+                    m_Main.comboPlayer2.SelectedIndex = 1;
+                }
+            }
+        }
+
         public void ClearInfos()
         {
             if (m_Main != null)
@@ -70,6 +94,16 @@ namespace Sc2ReplayMonkey
                 m_Main.labelVersionValue.Content = String.Empty;
                 m_Main.labelRecorderValue.Content = String.Empty;
                 m_Main.labelGameTypeValue.Content = String.Empty;
+                m_Main.textboxComment.Text = String.Empty;
+                m_Main.labelAPMP1T1.Content = String.Empty;
+                m_Main.labelAPMP2T1.Content = String.Empty;
+                m_Main.labelAPMP1T2.Content = String.Empty;
+                m_Main.labelAPMP2T2.Content = String.Empty;
+                m_Main.labelDate.Content = String.Empty;
+                m_Main.labelLength.Content = String.Empty;
+                m_Main.labelMapName.Content = string.Empty;
+                m_Main.richTextBoxChatLog.Document.Blocks.Clear();
+                m_Main.currentMapImage.Source = null;                
                 m_Main.imageWorkerP1T1.Source = null;
                 m_Main.imageWorkerP2T1.Source = null;
                 m_Main.imageWorkerP1T2.Source = null;
@@ -80,6 +114,8 @@ namespace Sc2ReplayMonkey
                 m_Main.randomImageP2T2.Source = null;
                 m_Main.chartAPMPlayer1.ItemsSource = null;
                 m_Main.chartAPMPlayer2.ItemsSource = null;
+                m_Main.listBoxPlayer1.Items.Clear();
+                m_Main.listBoxPlayer2.Items.Clear();
                 m_Main.labelWinner.Content = "?";
                 m_Main.labelWinner.Foreground = Brushes.White;
             }
@@ -92,56 +128,115 @@ namespace Sc2ReplayMonkey
             optionsWindow.ShowDialog();
         }
 
-        public void UpdateSelectedPlayer(String playerName, LineSeries chart)
+        public void UpdateSelectedPlayer(String playerName, LineSeries chart, ListBox listEvents)
         {
             GenerateChart(playerName, chart);
+            PopulateEvents(playerName, listEvents);
         }
 
-        public void RelocateReplay()
+        public void SaveComment()
+        {
+            m_IFileHandlingBaboon.SaveComment(m_Main.textboxComment.Text, m_CurrentData.ReplayPath);
+        }
+
+        public void RenameReplay()
+        {
+            MidLevelLogic midLevelLogic = new MidLevelLogic(m_Main, this);
+            if (!m_Config.AutoRename)
+            {
+                RenameWindow renameWindow = new RenameWindow(m_Main, midLevelLogic);
+                renameWindow.Owner = m_Main;
+                renameWindow.ShowDialog();
+            }
+            else
+            {
+                String newReplayName = String.Empty;
+                if (midLevelLogic.GenerateNewName(out newReplayName))
+                {
+                    if (!String.IsNullOrEmpty(newReplayName))
+                    {
+                        RelocateReplay(Path.GetDirectoryName(m_CurrentData.ReplayPath) + "\\" + newReplayName + ".sc2replay");
+                    }
+                }
+            }  
+        }
+
+        public void RelocateReplay(String newPath = "")
         {
             if (!String.IsNullOrEmpty(m_CurrentData.ReplayPath))
             {
-                String newPath = String.Empty;
                 Boolean relocate = false;
-                if (!m_Config.AutoRelocate)
+                if (!String.IsNullOrEmpty(newPath))
                 {
-                    SaveFileDialog sfDialog = new SaveFileDialog();
-                    sfDialog.DefaultExt = ".sc2replay";
-                    sfDialog.Filter = "Starcraft II Replay|*.sc2replay";
-                    sfDialog.InitialDirectory = m_Config.RelocatePath;
-                    sfDialog.Title = "Chose the path you want to relocate the current replay to";
-                    sfDialog.FileName = m_Config.RelocatePath + "\\" + Path.GetFileName(m_CurrentData.ReplayPath);
-                    Nullable<bool> sfResult = sfDialog.ShowDialog(m_Main);
-
-                    if (sfResult == true)
-                    {
-                        newPath = sfDialog.FileName;
-                        relocate = true;
-                    }
+                    relocate = true;
                 }
                 else
                 {
-                    newPath = m_Config.RelocatePath + "\\" + Path.GetFileName(m_CurrentData.ReplayPath);
-                    relocate = true;
+                    if (!m_Config.AutoRelocate)
+                    {
+                        SaveFileDialog sfDialog = new SaveFileDialog();
+                        sfDialog.DefaultExt = ".sc2replay";
+                        sfDialog.Filter = "Starcraft II Replay|*.sc2replay";
+                        sfDialog.OverwritePrompt = false;
+                        sfDialog.InitialDirectory = m_Config.RelocatePath;
+                        sfDialog.Title = "Chose the path you want to relocate the current replay to";
+                        //sfDialog.FileName = m_Config.RelocatePath + "\\" + Path.GetFileName(m_CurrentData.ReplayPath);
+                        Nullable<bool> sfResult = sfDialog.ShowDialog(m_Main);
+
+                        if (sfResult == true)
+                        {
+                            newPath = sfDialog.FileName;
+                            relocate = true;
+                        }
+                    }
+                    else
+                    {
+                        newPath = m_Config.RelocatePath + "\\" + Path.GetFileName(m_CurrentData.ReplayPath);
+                        relocate = true;
+                    }
                 }
 
                 if (relocate)
                 {
-                    String dataPath = m_IFileHandlingBaboon.AvailableReplays[m_CurrentData.ReplayPath];
-                    m_IFileHandlingBaboon.RemoveReplayFromAvailables(m_CurrentData.ReplayPath);
-                    File.Move(m_CurrentData.ReplayPath, newPath);
-                    m_IFileHandlingBaboon.AddParsedReplayToAvailables(newPath, dataPath);
-                    m_IFileHandlingBaboon.ChangeParsedReplayPath(dataPath, newPath);
-                    m_CurrentData.ReplayPath = newPath;
-                    RefreshListBox();
+                    if (File.Exists(newPath))
+                    {
+                        m_UniqueRelocatePathInteger++;
+                        if (m_UniqueRelocatePathInteger > 1)
+                        {
+                            String fileCleanName = Path.GetFileNameWithoutExtension(newPath);
+                            fileCleanName = fileCleanName.Remove(fileCleanName.Length - 1);
+                            newPath = Path.GetDirectoryName(newPath) + "\\" + fileCleanName + m_UniqueRelocatePathInteger + Path.GetExtension(newPath);
+                        }
+                        else
+                        {
+                            newPath = Path.GetDirectoryName(newPath) + "\\" + Path.GetFileNameWithoutExtension(newPath) + m_UniqueRelocatePathInteger + Path.GetExtension(newPath);
+                        }
+                        RelocateReplay(newPath);
+                        return;
+                    }
+                    else
+                    {                        
+                        String oldPath = m_CurrentData.ReplayPath;
+                        String dataPath = m_IFileHandlingBaboon.AvailableReplays[oldPath];
+                        m_IFileHandlingBaboon.RemoveReplayFromAvailables(m_CurrentData.ReplayPath);
+                        File.Move(m_CurrentData.ReplayPath, newPath);
+                        m_IFileHandlingBaboon.AddParsedReplayToAvailables(newPath, dataPath);
+                        m_IFileHandlingBaboon.ChangeParsedReplayPath(dataPath, newPath, oldPath);
+                        m_CurrentData.ReplayPath = newPath;
+                        RefreshListBox();
+                        m_UniqueRelocatePathInteger = 0;
+                        ClearInfos();
+                    }
                 }
             }
         }
 
         public void DeleteReplay()
         {
+            Int32 lastItemIndex = -1;
             if (!String.IsNullOrEmpty(m_CurrentData.ReplayPath))
             {
+                lastItemIndex = m_Main.listBoxAvailableReplays.SelectedIndex;
                 String replayPath = m_CurrentData.ReplayPath;
 
                 //Deleting the replay's XML.
@@ -155,6 +250,7 @@ namespace Sc2ReplayMonkey
                 }
             }
             RefreshListBox();
+            ClearInfos();
         }
 
         public void RefreshListBox()
@@ -174,33 +270,11 @@ namespace Sc2ReplayMonkey
             }
         }
 
-        public void UpdateDisplay(String XMLFilePath)
-        {
-            ClearInfos();
-            if (m_IMonkeyDeserializer != null)
-            {
-                m_IMonkeyDeserializer.DeserializeReplay(XMLFilePath);
-                m_CurrentData = m_IMonkeyDeserializer.CurrentReplayData;
-                GenerateTargetStringDict();
-                InitComboBoxes();
-                UpdateChatLogContent();
-                UpdateCurrentMap();
-                UpdatePlayersInfo();
-                UpdateGameInfo();
-                UpdateOtherInfo();
-                m_Main.comboPlayer1.SelectedIndex = 0;
-                if (m_Main.comboPlayer2.Items.Count > 1)
-                {
-                    m_Main.comboPlayer2.SelectedIndex = 1;
-                }
-            }
-        }
-
         public void ShowWinner()
         {
             if (m_Main != null)
             {
-                if (m_Main.labelWinner.Content == "?")
+                if (m_Main.labelWinner.Content.ToString() == "?")
                 {
                     foreach (PlayerInfo player in m_CurrentData.PlayersInfo)
                     {
@@ -239,7 +313,18 @@ namespace Sc2ReplayMonkey
                     RegistryKey sc2Key = hkLocal.OpenSubKey("SOFTWARE");
                     if(sc2Key != null)
                     {
-                        sc2Key = sc2Key.OpenSubKey("Blizzard Entertainment");
+                        //Check if user has 32bit or 64bit Windows, and navigates to the right key accordingly.
+                        RegistryKey sc2Key32 = sc2Key.OpenSubKey("Blizzard Entertainment");
+                        if (sc2Key32 == null)
+                        {
+                            RegistryKey sc2Key64 = sc2Key.OpenSubKey("Wow6432Node");
+                            sc2Key = sc2Key64.OpenSubKey("Blizzard Entertainment");
+                        }
+                        else
+                        {
+                            sc2Key = sc2Key32;
+                        }
+                        //Continue navigation, registry path is the same for 32 and 64bit from that point on.
                         if (sc2Key != null)
                         {
                             sc2Key = sc2Key.OpenSubKey("Starcraft II Retail");
@@ -249,18 +334,33 @@ namespace Sc2ReplayMonkey
                                 if (!String.IsNullOrEmpty(sc2Path))
                                 {
                                     sc2Path += "Versions\\";
-                                    if (m_CurrentData != null && m_CurrentData.Build != null)
+                                    if (m_CurrentData != null)
                                     {
                                         sc2Path += "Base" + m_CurrentData.Build + "\\";
                                         sc2Path += "SC2.exe";
 
                                         if (File.Exists(sc2Path))
                                         {
-                                            Process.Start(m_CurrentData.ReplayPath).WaitForExit();
+                                            Process.Start(m_CurrentData.ReplayPath);
                                         }
                                         else
                                         {
-                                            MessageBox.Show(m_Main, "You do not have the required game version to watch this replay (version: " + m_CurrentData.Version + ")", "SC2 version is missing");
+                                            if (!m_Config.DoNotShowSc2NotFoundError)
+                                            {
+                                                MessageBoxResult result = MessageBox.Show(m_Main, "You do not seem to have the required game version to watch this replay\n"
+                                                                                                  + "(version: " + m_CurrentData.Version + ")\n"
+                                                                                                  + "This error can be hidden in the options\n"
+                                                                                                  + "Try to launch anyway?",
+                                                                                                  "SC2 version seems to be missing",
+                                                                                                  MessageBoxButton.YesNo,
+                                                                                                  MessageBoxImage.Question);
+                                                if (result != MessageBoxResult.Yes)
+                                                {
+                                                    return;
+                                                }
+                                            }
+
+                                            Process.Start(m_CurrentData.ReplayPath);
                                         }
                                     }
                                 }
@@ -273,6 +373,32 @@ namespace Sc2ReplayMonkey
         #endregion
 
         #region Private methods
+        private void UpdateCommentBox()
+        {
+            if (m_IFileHandlingBaboon.Comments.ContainsKey(m_IMonkeyDeserializer.CurrentReplayData.ReplayPath))
+            {
+                m_Main.textboxComment.Text = m_IFileHandlingBaboon.Comments[m_IMonkeyDeserializer.CurrentReplayData.ReplayPath];
+            }
+        }
+
+        private void PopulateEvents(String playerName, ListBox listEvents)
+        {
+            PlayerInfo playerRequested = m_CurrentData.PlayersInfo[GetPlayerIDFromName(playerName)];
+            String timeFormat = "HH:mm:ss";
+            if (m_CurrentData.GameLength < 3600)
+            {
+                timeFormat = "mm:ss";
+            }
+
+            foreach (KeyValuePair<Sc2Ability, Int32> sc2Event in playerRequested.FirstEvents)
+            {
+                if (sc2Event.Key.SubType != 0 && sc2Event.Key.SubType != 8)
+                {
+                    listEvents.Items.Add("(" + new DateTime(TimeSpan.FromSeconds(sc2Event.Value).Ticks).ToString(timeFormat) + "): " + sc2Event.Key.Description);
+                }
+            }
+        }
+
         private void InitComboBoxes()
         {
             if (m_CurrentData != null && m_CurrentData.PlayersInfo != null)
@@ -648,7 +774,7 @@ namespace Sc2ReplayMonkey
             }
         }
 
-        private Int32 GetPlayerIDFromName(String name)
+        public Int32 GetPlayerIDFromName(String name)
         {
             foreach (KeyValuePair<Int32, String> pair in m_TargetStringDict)
             {
@@ -659,9 +785,11 @@ namespace Sc2ReplayMonkey
             }
             return 0;
         }
+        
         #endregion
 
         #region Member variables
+        private Int32 m_UniqueRelocatePathInteger = 0;
         private MainWindow m_Main = null;
         private IMonkeyDeserializer m_IMonkeyDeserializer = null;
         private IFileHandlingBaboon m_IFileHandlingBaboon = null;
@@ -671,7 +799,7 @@ namespace Sc2ReplayMonkey
         private Dictionary<Int32, String> m_TargetStringDict = null;
         private Dictionary<String, String> m_Maps = null;
         private Dictionary<String, String> m_Workers = null;
-        String m_CurrentDirectory = Directory.GetCurrentDirectory();
+        private String m_CurrentDirectory = Directory.GetCurrentDirectory();        
         #endregion
     }
 }

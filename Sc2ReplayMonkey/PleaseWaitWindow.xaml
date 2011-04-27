@@ -4,7 +4,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:local="clr-namespace:Sc2ReplayMonkey"
         WindowStartupLocation="CenterOwner"
-        Title="PleaseWaitWindow" Height="174" Width="300" Activated="Window_Activated">
+        Title="Please Wait" Height="174" Width="300" Activated="Window_Activated">
     <Grid Style="{StaticResource WindowBackground}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

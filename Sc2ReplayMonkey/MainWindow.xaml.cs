@@ -109,7 +109,7 @@ namespace Sc2ReplayMonkey
             if (listBoxAvailableReplays.SelectedItem != null)
             {
                 m_Logic.UpdateDisplay(m_IFileHandlingBaboon.AvailableReplays[listBoxAvailableReplays.SelectedItem.ToString()]);
-            }
+            }            
         }
 
         private void buttonShowWinner_Click(object sender, RoutedEventArgs e)
@@ -146,7 +146,7 @@ namespace Sc2ReplayMonkey
         {
             if (comboPlayer1.Items != null && comboPlayer1.Items.Count > 0 && comboPlayer1.SelectedItem != null)
             {
-                m_Logic.UpdateSelectedPlayer(comboPlayer1.SelectedItem.ToString(), chartAPMPlayer1);
+                m_Logic.UpdateSelectedPlayer(comboPlayer1.SelectedItem.ToString(), chartAPMPlayer1, listBoxPlayer1);
             }
         }
 
@@ -154,8 +154,18 @@ namespace Sc2ReplayMonkey
         {
             if (comboPlayer2.Items != null && comboPlayer2.Items.Count > 0 && comboPlayer2.SelectedItem != null)
             {
-                m_Logic.UpdateSelectedPlayer(comboPlayer2.SelectedItem.ToString(), chartAPMPlayer2);
+                m_Logic.UpdateSelectedPlayer(comboPlayer2.SelectedItem.ToString(), chartAPMPlayer2, listBoxPlayer2);
             }
+        }
+
+        private void buttonRename_Click(object sender, RoutedEventArgs e)
+        {
+            m_Logic.RenameReplay();
+        }
+
+        private void buttonSaveComment_Click(object sender, RoutedEventArgs e)
+        {
+            m_Logic.SaveComment();
         }
 
         ParsedData CurrentDataParsed = new ParsedData();

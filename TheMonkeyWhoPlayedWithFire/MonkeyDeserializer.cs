@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using SC2ParserApe;
 using TheUpsideDownLemur;
+using System.IO;
 
 namespace TheMonkeyWhoPlayedWithFire
 {
@@ -138,6 +139,22 @@ namespace TheMonkeyWhoPlayedWithFire
 
                 CurrentReplayData.PlayersInfo.Add(newPlayer);
             }
+
+            //Deserialize Replay's comment
+            if(File.Exists(Directory.GetCurrentDirectory() + @"\AdditionalInfos.xml"))
+            {
+                doc.Load(Directory.GetCurrentDirectory() + @"\AdditionalInfos.xml");
+                XmlNode rootNode = doc.SelectSingleNode("Root");
+                if (rootNode != null)
+                {
+                    XmlNode replayNode = rootNode.SelectSingleNode("Replay");
+                    if (replayNode != null)
+                    {
+                        XmlNode commentNode = replayNode.SelectSingleNode("Comment");
+                        CurrentReplayComment = commentNode != null ? commentNode.InnerXml : "";
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -163,5 +180,6 @@ namespace TheMonkeyWhoPlayedWithFire
         }
 
         public ParsedData CurrentReplayData { get; set; }
+        public String CurrentReplayComment { get; set; }
     }
 }

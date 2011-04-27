@@ -33,6 +33,7 @@ namespace TheMonkeyWhoPlayedWithFire
         public FileHandlingBaboon()
         {
             DeserializeAvailables();
+            DeserializeComments();
 
             IoC.AddMonkey<IFileHandlingBaboon>(this);
         }
@@ -66,6 +67,14 @@ namespace TheMonkeyWhoPlayedWithFire
                     arguments += "-rp:\"" + ReplayPath + "\" ";
                 }
 
+                //Reinitialize the log file.
+                String logPath = Directory.GetCurrentDirectory() + "\\parseApeLog.txt";
+                if (File.Exists(logPath))
+                {
+                    File.Delete(logPath);
+                }
+                m_Writer = File.CreateText(logPath);
+
                 Process newProcess = new Process();
 
                 // StartInfo contains the startup information of the new process
@@ -78,9 +87,18 @@ namespace TheMonkeyWhoPlayedWithFire
 
                 // This ensures that you get the output from the DOS application
                 newProcess.StartInfo.RedirectStandardOutput = true;
+                newProcess.StartInfo.RedirectStandardError = true;
+                newProcess.EnableRaisingEvents = true;
+                newProcess.ErrorDataReceived += parserApe_DataRecieved;
+                newProcess.OutputDataReceived += parserApe_DataRecieved;
 
                 newProcess.Start();
+                newProcess.BeginErrorReadLine();
+                newProcess.BeginOutputReadLine();
                 newProcess.WaitForExit();
+
+                m_Writer.Close();
+                m_Writer = null;
 
                 String outputDir = Directory.GetCurrentDirectory() + "\\Replays parsed";
                 foreach (String ReplayPath in ReplayPaths)
@@ -91,6 +109,87 @@ namespace TheMonkeyWhoPlayedWithFire
                     dataPath += ".xml";
                     AddParsedReplayToAvailables(ReplayPath, dataPath);
                 }
+            }
+        }
+
+        public void SaveComment(String Comment, String ReplayPath)
+        {
+            CheckAdditionalInfoXMLExistence();
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xmlAdditionalInfoPath);
+            XmlNode rootNode = doc.SelectSingleNode("Root");
+
+            Boolean entryExists = false;
+            foreach (XmlNode comment in rootNode.ChildNodes)
+            {
+                if (comment["ReplayPath"].InnerXml == ReplayPath)
+                {
+                    //The entry already exists, update it.
+                    entryExists = true;
+                    if (comment["Comment"] != null)
+                    {
+                        comment["Comment"].InnerXml = Comment;
+                    }
+                    else
+                    {
+                        XmlElement commentElement = doc.CreateElement("Comment");
+                        comment.InnerXml = Comment;
+                        comment.AppendChild(commentElement);
+                    }
+                    break;
+                }
+            }
+
+            //The entry doesn't exist, create it from scratch.
+            if (!entryExists)
+            {
+                XmlElement availableComment = doc.CreateElement("AvailableComment");
+                XmlElement replayPathElement = doc.CreateElement("ReplayPath");
+                XmlElement commentElement = doc.CreateElement("Comment");
+                replayPathElement.InnerXml = ReplayPath;
+                commentElement.InnerXml = Comment;
+                availableComment.AppendChild(replayPathElement);
+                availableComment.AppendChild(commentElement);
+                rootNode.AppendChild(availableComment);
+            }
+
+            doc.Save(xmlAdditionalInfoPath);
+
+            if (Comments.ContainsKey(ReplayPath))
+            {
+                Comments[ReplayPath] = Comment;
+            }
+
+            else 
+            {
+                Comments.Add(ReplayPath, Comment);
+            }
+        }
+
+        private void CheckAdditionalInfoXMLExistence()
+        {            
+            if (!File.Exists(xmlAdditionalInfoPath))
+            {
+                XmlDocument doc = new XmlDocument();
+
+                //XML version declaration
+                XmlNode xmlnode = doc.CreateNode(XmlNodeType.XmlDeclaration, "", "");
+                doc.AppendChild(xmlnode);
+
+                //Adding a root element, cannot have empty XML.
+                XmlElement rootElement = SerializeElement(doc, "Root", "");
+                doc.AppendChild(rootElement);
+                doc.Save(xmlAdditionalInfoPath);
+            }
+        }
+
+        //Event handler that writes console's output to a logfile.
+        private void parserApe_DataRecieved(Object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                m_Writer.WriteLine(e.Data);
             }
         }
 
@@ -136,21 +235,37 @@ namespace TheMonkeyWhoPlayedWithFire
                 if (!AvailableReplays.ContainsKey(ReplayPath))
                 {
                     AvailableReplays.Add(ReplayPath, DataPath);
-                }
+                }                
             }
         }
 
-        public void ChangeParsedReplayPath(String ReplayXmlPath, String NewPath)
+        public void ChangeParsedReplayPath(String ReplayXmlPath, String NewPath, String OldPath)
         {
+            //Update the parsed replay's XML.
             XmlDocument doc = new XmlDocument();
             doc.Load(ReplayXmlPath);
             XmlNode gameVariables = doc.SelectSingleNode("Game_Variables");
             gameVariables.SelectSingleNode("ReplayPath").InnerXml = NewPath;
             doc.Save(ReplayXmlPath);
+
+            //Update the comments' XML.
+            CheckAdditionalInfoXMLExistence();
+            doc.Load(xmlAdditionalInfoPath);
+            XmlNode rootNode = doc.SelectSingleNode("Root");
+            foreach (XmlNode comment in rootNode.ChildNodes)
+            {
+                if (comment["ReplayPath"].InnerXml == OldPath)
+                {
+                    comment["ReplayPath"].InnerXml = NewPath;
+                    doc.Save(xmlAdditionalInfoPath);
+                    break;
+                }
+            }            
         }
 
         public void RemoveReplayFromAvailables(String ReplayPath)
         {
+            //Remove from available replays
             if (AvailableReplays.ContainsKey(ReplayPath))
             {
                 //Remove from dictionary
@@ -170,9 +285,30 @@ namespace TheMonkeyWhoPlayedWithFire
                     }
                 }              
             }
+
+            //Remove from available comments
+            if (Comments.ContainsKey(ReplayPath))
+            {
+                //Remove from dictionary
+                Comments.Remove(ReplayPath);
+
+                //Remove from XML
+                XmlDocument doc = new XmlDocument();
+                doc.Load(xmlAdditionalInfoPath);
+                XmlNode rootNode = doc.SelectSingleNode("Root");
+                foreach (XmlNode comment in rootNode.ChildNodes)
+                {
+                    if (comment["ReplayPath"].InnerXml == ReplayPath)
+                    {
+                        rootNode.RemoveChild(comment);
+                        doc.Save(xmlAdditionalInfoPath);
+                        break;
+                    }
+                }
+            }
         }
 
-        public void DeserializeAvailables()
+        private void DeserializeAvailables()
         {
             AvailableReplays = new Dictionary<String, String>();
             if (File.Exists(xmlPath))
@@ -188,6 +324,27 @@ namespace TheMonkeyWhoPlayedWithFire
                     if (!AvailableReplays.ContainsKey(replayPath))
                     {
                         AvailableReplays.Add(replayPath, dataPath);
+                    }
+                }
+            }
+        }
+
+        private void DeserializeComments()
+        {
+            Comments = new Dictionary<String, String>();
+            if (File.Exists(xmlAdditionalInfoPath))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(xmlAdditionalInfoPath);
+                XmlNode rootNote = doc.SelectSingleNode("Root");
+
+                foreach (XmlNode comment in rootNote.ChildNodes)
+                {
+                    String replayPath = comment.SelectSingleNode("ReplayPath").InnerXml;
+                    String commentText = comment.SelectSingleNode("Comment").InnerXml;
+                    if (!Comments.ContainsKey(replayPath))
+                    {
+                        Comments.Add(replayPath, commentText);
                     }
                 }
             }
@@ -213,8 +370,10 @@ namespace TheMonkeyWhoPlayedWithFire
             return newElement;
         }
 
-
+        String xmlAdditionalInfoPath = Directory.GetCurrentDirectory() + @"\AdditionalInfos.xml";
         String xmlPath = Directory.GetCurrentDirectory() + @"\AvailableReplays.xml";
         public Dictionary<String, String> AvailableReplays { get; set; }
+        public Dictionary<String, String> Comments { get; set; }
+        StreamWriter m_Writer = null;
     }
 }

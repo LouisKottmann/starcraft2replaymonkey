@@ -43,8 +43,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdditionalInfo.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="FileHandlingBaboon.cs" />
+    <Compile Include="IAdditionalInfo.cs" />
     <Compile Include="IConfig.cs" />
     <Compile Include="IFileHandlingBaboon.cs" />
     <Compile Include="IMonkeyDeserializer.cs" />
