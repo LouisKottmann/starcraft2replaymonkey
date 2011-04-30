@@ -370,6 +370,11 @@ namespace Sc2ReplayMonkey
                 }
             }
         }
+
+        public void DisplayVersionNr()
+        {
+            m_Main.Title += " v" + m_IFileHandlingBaboon.VersionNumber;
+        }
         #endregion
 
         #region Private methods
@@ -505,21 +510,24 @@ namespace Sc2ReplayMonkey
             RichTextBox RTB = m_Main.richTextBoxChatLog;
             RTB.Document.Blocks.Clear();
             TextPointer docStart = RTB.CaretPosition;
-
+            
             foreach (Message mess in chatLog)
             {
-                TimeSpan newTimeSpan = new TimeSpan(0, 0, mess.MessageTime);
-                TextRange tr = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
-                tr.Text = "(" + newTimeSpan.ToString() + ") ";
-                tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.White);
+                if ((mess.MessageID - 1) >= 0 && (mess.MessageID - 1) < m_CurrentData.PlayersInfo.Count)
+                {
+                    TimeSpan newTimeSpan = new TimeSpan(0, 0, mess.MessageTime);
+                    TextRange tr = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
+                    tr.Text = "(" + newTimeSpan.ToString() + ") ";
+                    tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.White);
 
-                TextRange tr2 = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
-                tr2.Text = mess.MessageName;
-                tr2.ApplyPropertyValue(TextElement.ForegroundProperty, m_Sc2ToWPFColors[m_CurrentData.PlayersInfo[mess.MessageID - 1].sColor]);
+                    TextRange tr2 = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
+                    tr2.Text = mess.MessageName;
+                    tr2.ApplyPropertyValue(TextElement.ForegroundProperty, m_Sc2ToWPFColors[m_CurrentData.PlayersInfo[mess.MessageID - 1].sColor]);
 
-                TextRange tr3 = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
-                tr3.Text = " (" + m_TargetStringDict[mess.MessageTarget] + "):" + mess.MessageContent + Environment.NewLine;
-                tr3.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.White);
+                    TextRange tr3 = new TextRange(RTB.Document.ContentEnd, RTB.Document.ContentEnd);
+                    tr3.Text = " (" + m_TargetStringDict[mess.MessageTarget] + "):" + mess.MessageContent + Environment.NewLine;
+                    tr3.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.White);
+                }
             }
 
             RTB.ScrollToHome();

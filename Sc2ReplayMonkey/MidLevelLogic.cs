@@ -40,7 +40,7 @@ namespace Sc2ReplayMonkey
                     case RenamingType.Personalized:
                         NewName = m_Config.RenameFormat;
                         NewName = ReplaceInvalidChars(NewName);
-                        break;
+                        return true;
                     case RenamingType.Formatted1: //Player1(Race) vs Player2(Race)
                         String playerNameF1 = m_Main.labelPlayer1Team1.Content.ToString();
                         NewName += playerNameF1 + "(" + data.PlayersInfo[m_ControlsLogic.GetPlayerIDFromName(playerNameF1)].LRace + ") ";

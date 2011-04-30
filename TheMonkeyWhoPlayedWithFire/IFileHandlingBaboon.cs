@@ -17,6 +17,8 @@ namespace TheMonkeyWhoPlayedWithFire
 
         Dictionary<String, String> Comments { get; set; }
 
+        String VersionNumber { get; set; }
+
         void AddParsedReplayToAvailables(String ReplayPath, String DataPath);
 
         void RemoveReplayFromAvailables(String ReplayPath);

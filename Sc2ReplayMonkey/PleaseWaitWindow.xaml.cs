@@ -48,8 +48,9 @@ namespace Sc2ReplayMonkey
             InitializeComponent();  
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(worker_DoWork);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
             worker.RunWorkerAsync();
@@ -57,6 +58,7 @@ namespace Sc2ReplayMonkey
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
             worker.DoWork -= new DoWorkEventHandler(worker_DoWork);
             worker.RunWorkerCompleted -= new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
             this.Close();  
@@ -74,7 +76,6 @@ namespace Sc2ReplayMonkey
             }
         }
 
-        BackgroundWorker worker = new BackgroundWorker();
         IFileHandlingBaboon m_IFileHandlingBaboon = null;
         List<String> m_ReplaysToParse = new List<String>();
     }

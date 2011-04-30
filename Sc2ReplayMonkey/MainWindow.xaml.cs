@@ -61,6 +61,7 @@ namespace Sc2ReplayMonkey
             m_IConfig = IoC.FindMonkey<IConfig>();
             CurrentDataParsed = m_IMonkeyDeserializer.CurrentReplayData;
             m_Logic = new ControlsLogic(this);
+            m_Logic.DisplayVersionNr();
             m_Logic.RefreshListBox();
         }
 

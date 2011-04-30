@@ -63,8 +63,8 @@
             </Expander>
             <TextBox Style="{StaticResource textBoxStyle}" Grid.Row="3" Name="textBoxRename" TextChanged="textBoxRename_TextChanged"/>
             <StackPanel Orientation="Horizontal" Grid.Row="4">
-                <Label Style="{StaticResource labelStyle}" Content="Preview : " />
-                <Label Style="{StaticResource labelStyle}" Name="labelPreview" />
+                <Label Style="{StaticResource labelStyle}" Content="Preview : " VerticalAlignment="Center"/>
+                <Label Style="{StaticResource labelStyle}" Name="labelPreview" VerticalAlignment="Center"/>
                 <Button Style="{StaticResource GlassButton}" Name="buttonGeneratePreview" Content="Generate" Click="buttonGeneratePreview_Click"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="5" FlowDirection="RightToLeft">

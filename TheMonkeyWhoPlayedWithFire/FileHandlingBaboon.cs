@@ -34,7 +34,7 @@ namespace TheMonkeyWhoPlayedWithFire
         {
             DeserializeAvailables();
             DeserializeComments();
-
+            ReadVersionNumber();
             IoC.AddMonkey<IFileHandlingBaboon>(this);
         }
 
@@ -308,6 +308,15 @@ namespace TheMonkeyWhoPlayedWithFire
             }
         }
 
+        private void ReadVersionNumber()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(Directory.GetCurrentDirectory() + @"\CurrentVersion.xml");
+            XmlNode rootNode = doc.SelectSingleNode("Root");
+            VersionNumber = rootNode.SelectSingleNode("CurrentVersion").InnerXml;
+            VersionNumber = VersionNumber[0] + "." + VersionNumber[1] + "." + VersionNumber[2];
+        }
+
         private void DeserializeAvailables()
         {
             AvailableReplays = new Dictionary<String, String>();
@@ -374,6 +383,7 @@ namespace TheMonkeyWhoPlayedWithFire
         String xmlPath = Directory.GetCurrentDirectory() + @"\AvailableReplays.xml";
         public Dictionary<String, String> AvailableReplays { get; set; }
         public Dictionary<String, String> Comments { get; set; }
+        public String VersionNumber { get; set; }
         StreamWriter m_Writer = null;
     }
 }
