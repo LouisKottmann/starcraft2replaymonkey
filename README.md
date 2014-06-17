@@ -57,4 +57,4 @@ Zerg skin:
 
 ![](http://imgur.com/o3GF8.jpg)
 
-Contact: FatalBaboon@irc.quakenet.org
+Author: louis.kottmann@gmail.com
