@@ -12,7 +12,7 @@ TheOmniscientChimp still relies on files on the google code page to update this 
 
 ## Technical information
 
-This project uses SC2ParserApe available [here](http://code.google.com/p/sc2parserape/) (bundled in, you don't need to install it separately)
+This project uses SC2ParserApe available [here](https://github.com/LouisKottmann/sc2parserape) (bundled in, you don't need to install it separately)
 
 Phalanger is no longer required to be installed for this software to run, but you can still have an interested look 
 [here](http://phalanger.codeplex.com/) =)
