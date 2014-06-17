@@ -5,7 +5,7 @@ starcraft2replaymonkey
 
 This file has moved from [google code](https://code.google.com/p/starcraft2replaymonkey/)
 
-Sc2ParserApe is a tool I made to parse SC2's replays from C#, 
+[Sc2ParserApe](https://github.com/LouisKottmann/sc2parserape) is the tool I made to parse SC2's replays from C#, 
 it is probably way out of date in regard to the current state of replay files but could be updated.
 
 TheOmniscientChimp still relies on files on the google code page to update this software.
@@ -33,15 +33,15 @@ Discuss [here](http://www.teamliquid.net/forum/viewmessage.php?topic_id=212381)
 
 ## Features
 
-    - Fast display - replays get only parsed once.
-    - Displays all the basic information (realm, players names, races, APM ...).
-    - Allow for easy relocation (to your starcraft II replay folder for example).
-    - Displays APM graph. (New in v0.0.0.4b)
-    - Diplays player's builds (next to their APM graphs). (New in v1.0.1 !)
-    - Allow users to add comments on each replay (New in v1.1.0!)
-    - A big renaming ability has been added, with lots of possibilities (New in v1.1.0!)
-    - An auto-updater/loader will automatically notify you of new versions if you run *TheOmniscientChimp.exe* instead of Sc2ReplayMonkey.exe, the former will also automatically start the latter once the update is done (if there is one). (New in v1.1.0!)
-    - You can chose between two skins (Zerg and Terran) *(New in v1.2.0!)*
+    * Fast display - replays get only parsed once.
+    * Displays all the basic information (realm, players names, races, APM ...).
+    * Allow for easy relocation (to your starcraft II replay folder for example).
+    * Displays APM graph. (New in v0.0.0.4b)
+    * Diplays player's builds (next to their APM graphs). (New in v1.0.1 !)
+    * Allow users to add comments on each replay (New in v1.1.0!)
+    * A big renaming ability has been added, with lots of possibilities (New in v1.1.0!)
+    * An auto-updater/loader will automatically notify you of new versions if you run *TheOmniscientChimp.exe* instead of Sc2ReplayMonkey.exe, the former will also automatically start the latter once the update is done (if there is one). (New in v1.1.0!)
+    * You can chose between two skins (Zerg and Terran) *(New in v1.2.0!)*
 
 ![](http://imgur.com/DwNTQ.jpg)
 
